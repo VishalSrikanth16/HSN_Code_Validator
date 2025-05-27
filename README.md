@@ -22,7 +22,6 @@ ROOT FOLDER/
 │   └── .env                # Environment variables (API keys etc)
 │
 ├── README.md               # This file
-└── requirements.txt        # Python dependencies
 ```
 ## Setup Instructions: 
 
@@ -41,7 +40,11 @@ venv\Scripts\activate         # Windows
 
 3. Install dependencies
 ```
-pip install -r ../requirements.txt
+pandas>=1.5.0
+openpyxl>=3.1.0
+google-generativeai>=0.3.0
+python-dotenv>=1.0.0
+
 ```
 4. Configure environment variables
 ```
