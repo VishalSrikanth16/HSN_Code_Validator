@@ -1,73 +1,75 @@
-## Overview:
+from google.adk.agents import Agent
+import pandas as pd
+from pathlib import Path
+from functools import lru_cache
+from dotenv import load_dotenv
+import re
 
-This project is an AI-powered agent built using Google's Agent Development Kit (ADK) that provides quick information about HSN (Harmonized System of Nomenclature) codes. Users can query by either an HSN code or a product/service description, and the agent returns matching HSN codes and their descriptions. It supports GST-related lookups for tax classification purposes. The agent reads HSN data from an Excel file (HSN_SAC.xlsx), processes it into a searchable format, and responds intelligently based on user queries.
+load_dotenv()
 
-## Content
-* Features
-* Project Structure
-* Setup Intructions and Installation
-* Usage
-* Licence
+BASE_DIR = Path(__file__).parent
+excel_path = BASE_DIR / 'HSN_SAC.xlsx'
 
-## Features:
+# Reading the excel file that is locally stored using pandas library
+df = pd.read_excel(excel_path, dtype={'\nHSNCode': str})
+df.columns = df.columns.str.strip()
 
-* Lookup HSN code descriptions by exact HSN code.
-* Search HSN codes by partial or full product/service descriptions.
-* Handles missing or incomplete data gracefully.
-* Built on Google ADK with the Gemini language model.
-* Fast and efficient in-memory data lookup.
-* Designed as a reusable agent for integration or deployment.
+df['Description'] = df['Description'].fillna("").astype(str)
 
-Project Structure:
-```
-ROOT FOLDER/
-│
-├── HSN_Agent/
-│   ├── __init__.py
-│   ├── agent.py            # Main agent code with HSN lookup logic
-│   ├── HSN_SAC.xlsx        # Excel file containing HSN code data
-│   └── .env                # Environment variables (API keys etc)
-│
-├── README.md               # This file
-```
-## Setup Instructions: 
+# Build HSN code -> description dictionary (zero-padded code strings)
+HSN_DATA = dict(zip(df['HSNCode'].str.zfill(2), df['Description']))
 
-1. Clone the repository
-```
-git clone https://github.com/yourusername/HSN_Code_Validator.git
-cd HSN_Code_Validator/HSN_Agent
-```
-2. Create and activate a virtual environment
+@lru_cache(maxsize=1024)
+def get_hsn_info(query: str) -> dict:
+    """
+    Given a query (HSN code or description substring)
+    returns matching HSN codes and descriptions
+    
+    """
+    query_clean = query.strip().lower()
 
-```
-python -m venv venv
-source venv/bin/activate      # macOS/Linux
-venv\Scripts\activate         # Windows
-```
+    # Check if query looks like an HSN code for ex. numerical values/integer values.
+    if re.fullmatch(r'\d{2,}', query_clean):
+        code = query_clean.zfill(2)
+        description = HSN_DATA.get(code)
+        if description:
+            return {
+                "status": "success",
+                "report": f"HSN Code {code}: {description}."
+            }
+        else:
+            return {
+                "status": "error",
+                "error_message": f"No data found for HSN code '{code}'."
+            }
+    else:
 
-3. Install dependencies
-```
-pandas>=1.5.0
-openpyxl>=3.1.0
-google-generativeai>=0.3.0
-python-dotenv>=1.0.0
+        matches = []
+        for code, desc in HSN_DATA.items():
+            if query_clean in desc.lower():
+                matches.append(f"{code}: {desc}")
 
-```
-4. Configure environment variables
-```
-GOOGLE_GENAI_USE_VERTEXAI=FALSE
-GOOGLE_API_KEY=your_google_api_key_here
-```
-5. Run the agent
-```
-adk web
-```
-## Usage:
+        if matches:
+            report = "Matching HSN codes:\n" + "\n".join(matches) # match the codes
+            return {
+                "status": "success",
+                "report": report
+            }
+        else:
+            return {
+                "status": "error",
+                "error_message": f"No HSN codes found matching description '{query}'." # if code does not exist
+            }
 
-* Query the agent by providing an HSN code (e.g., 1001) to get its description.
-* Or query by product/service description (e.g., "wheat") to get all matching HSN codes.
-* The agent will return results or a helpful error message if no match is found.
-
-## License:
-
-This project is licensed under the MIT License.
+root_agent = Agent(
+    name="hsn_lookup_agent",
+    model="gemini-2.0-flash",  
+    description="Agent to provide information about HSN codes and tax rates.",
+    instruction=(
+        "You are a helpful assistant who provides GST details for HSN codes. "
+        "Users may ask about HSN codes or descriptions. "
+        "If user provides an HSN code, return its description. "
+        "If user provides a description, return matching HSN codes."
+    ),
+    tools=[get_hsn_info],
+)
