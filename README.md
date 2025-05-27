@@ -11,7 +11,7 @@ This project is an AI-powered agent built using Google's Agent Development Kit (
 *Fast and efficient in-memory data lookup.
 *Designed as a reusable agent for integration or deployment.
 
-### Project Structure:
+Project Structure:
 
 ROOT FOLDER/
 │
