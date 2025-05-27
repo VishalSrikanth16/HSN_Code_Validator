@@ -11,7 +11,7 @@ This project is an AI-powered agent built using Google's Agent Development Kit (
 *Fast and efficient in-memory data lookup.
 *Designed as a reusable agent for integration or deployment.
 
-## Project Structure:
+### Project Structure:
 
 ROOT FOLDER/
 │
@@ -52,14 +52,12 @@ GOOGLE_API_KEY=your_google_api_key_here
 ```
 adk web
 ```
-Usage:
+## Usage:
 
-Query the agent by providing an HSN code (e.g., 1001) to get its description.
+* Query the agent by providing an HSN code (e.g., 1001) to get its description.
+* Or query by product/service description (e.g., "wheat") to get all matching HSN codes.
+* The agent will return results or a helpful error message if no match is found.
 
-Or query by product/service description (e.g., "wheat") to get all matching HSN codes.
-
-The agent will return results or a helpful error message if no match is found.
-
-License:
+## License:
 
 This project is licensed under the MIT License.
