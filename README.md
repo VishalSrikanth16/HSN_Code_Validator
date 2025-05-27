@@ -1,22 +1,17 @@
-Overview:
+## Overview:
 
 This project is an AI-powered agent built using Google's Agent Development Kit (ADK) that provides quick information about HSN (Harmonized System of Nomenclature) codes. Users can query by either an HSN code or a product/service description, and the agent returns matching HSN codes and their descriptions. It supports GST-related lookups for tax classification purposes. The agent reads HSN data from an Excel file (HSN_SAC.xlsx), processes it into a searchable format, and responds intelligently based on user queries.
 
-Features:
+## Features:
 
-Lookup HSN code descriptions by exact HSN code.
+* Lookup HSN code descriptions by exact HSN code.
+* Search HSN codes by partial or full product/service descriptions.
+*Handles missing or incomplete data gracefully.
+*Built on Google ADK with the Gemini language model.
+*Fast and efficient in-memory data lookup.
+*Designed as a reusable agent for integration or deployment.
 
-Search HSN codes by partial or full product/service descriptions.
-
-Handles missing or incomplete data gracefully.
-
-Built on Google ADK with the Gemini language model.
-
-Fast and efficient in-memory data lookup.
-
-Designed as a reusable agent for integration or deployment.
-
-Project Structure:
+## Project Structure:
 
 ROOT FOLDER/
 │
@@ -29,7 +24,7 @@ ROOT FOLDER/
 ├── README.md               # This file
 └── requirements.txt        # Python dependencies
 
-Setup Instructions: 
+## Setup Instructions: 
 
 1. Clone the repository
 
@@ -38,23 +33,25 @@ cd HSN_Code_Validator/HSN_Agent
 
 2. Create and activate a virtual environment
 
+```
 python -m venv venv
 source venv/bin/activate      # macOS/Linux
 venv\Scripts\activate         # Windows
+```
 
 3. Install dependencies
-
+```
 pip install -r ../requirements.txt
-
+```
 4. Configure environment variables
-
+```
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GOOGLE_API_KEY=your_google_api_key_here
-
+```
 5. Run the agent
-
+```
 adk web
-
+```
 Usage:
 
 Query the agent by providing an HSN code (e.g., 1001) to get its description.
