@@ -12,7 +12,7 @@ This project is an AI-powered agent built using Google's Agent Development Kit (
 *Designed as a reusable agent for integration or deployment.
 
 Project Structure:
-
+```
 ROOT FOLDER/
 │
 ├── HSN_Agent/
@@ -23,7 +23,7 @@ ROOT FOLDER/
 │
 ├── README.md               # This file
 └── requirements.txt        # Python dependencies
-
+```
 ## Setup Instructions: 
 
 1. Clone the repository
